@@ -49,8 +49,7 @@ template <typename T> class Queue{
             if(Size == 0){
                 throw std::out_of_range ("Out of range Queue<T>::front()");
             }
-            T result = Data[0];
-            return result;
+            return Data[0];
         }
         
         T back(){
@@ -58,8 +57,7 @@ template <typename T> class Queue{
             if(Size == 0){
                 throw std::out_of_range ("Out of range Queue<T>::back()");
             }
-            T result = Data[Size - 1];
-            return result;
+            return Data[Size - 1];
         }
 
         bool empty(){
