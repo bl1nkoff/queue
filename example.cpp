@@ -1,6 +1,7 @@
 #include <iostream>
 #include <thread>
 #include <mutex>
+#include <queue>
 #include "class.h"
 using namespace std;
 
@@ -12,6 +13,7 @@ void threadFunc(Queue<int> *queue, int a, int n){
 
 int main(){
     Queue<int> threadQueue;
+    threadQueue.push(0);
 
     const int n = 4000;
     const int threadsNums = 4;
@@ -27,7 +29,7 @@ int main(){
     t2.join();
     t3.join();
 
-    cout << "Размер: " << threadQueue.size() << ", Дубликатов: " << runsNum - threadQueue.size() << ", Всего операций:" << runsNum << endl << endl;
+    cout << "Размер: " << threadQueue.size() << ", Дубликатов: " << runsNum - threadQueue.size() - 1<< ", Всего операций:" << runsNum << endl << endl;
     
     Queue<char> queue;
 
@@ -61,10 +63,9 @@ int main(){
     cout << "Copy size: " << queueCopy.size() << endl;
     queueCopy.print();
 
-    cout << endl << "Are they equal?: " << ( queueCopy == queue ? "True" : "False" ) << endl;
-    cout << "Push a value into one of them!" << endl;
-    queueCopy.push('8');
-    cout << "And now? " << ( queueCopy == queue ? "True" : "False" ) << endl;
+    cout << endl << "Try to get the first element of an empty queue: " << endl;
+    Queue<int> emptyQueue;
+    cout << emptyQueue.front() << endl;
 
     return 0;
 }

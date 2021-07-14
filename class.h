@@ -4,27 +4,23 @@ using namespace std;
 
 template <typename T> class Queue{
     private:
-        T *Data;
-        int Size;
+        T *Data = new T[0];
+        int Size = 0;
         mutex m;
 
     public:
-        Queue(){
-            Data = new T[0];
-            Size = 0;
-        }
         ~Queue(){
+            lock_guard<mutex> lock(m);
             delete [] Data;
         }
 
         //добавление переменной в конец
         void push(T value){
-            m.lock();
+            lock_guard<mutex> lock(m);
             T *buffer = new T[Size + 1];
             for(int i = 0; i < Size; i++){
                 if(value == Data[i]){
                     delete [] buffer;
-                    m.unlock();
                     return;
                 }
                 buffer[i] = Data[i];
@@ -33,13 +29,12 @@ template <typename T> class Queue{
             Size++;
             delete [] Data;
             Data = buffer;
-            m.unlock();
         }
         
         //удаление первого элемента
         void pop(){
-            if(Size == 0) return
-            m.lock();
+            lock_guard<mutex> lock(m);
+            if(Size == 0) return;
             T *buffer = new T[Size - 1];
             for(int i = 1; i < Size; i++){
                 buffer[i - 1] = Data[i];
@@ -47,48 +42,50 @@ template <typename T> class Queue{
             Size--;
             delete [] Data;
             Data = buffer;
-            m.unlock();
         }
         
         T front(){
-            return Data[0];
+            lock_guard<mutex> lock(m);
+            if(Size == 0){
+                throw std::out_of_range ("Out of range Queue<T>::front()");
+            }
+            T result = Data[0];
+            return result;
         }
         
         T back(){
-            return Data[Size - 1];
+            lock_guard<mutex> lock(m);
+            if(Size == 0){
+                throw std::out_of_range ("Out of range Queue<T>::back()");
+            }
+            T result = Data[Size - 1];
+            return result;
         }
 
         bool empty(){
-            return Size == 0;
+            lock_guard<mutex> lock(m);
+            return ( Size == 0 );
         }
 
         int size(){
+            lock_guard<mutex> lock(m);
             return Size;
         }
 
         void print(){
-            m.lock();
+            lock_guard<mutex> lock(m);
             for(int i = 0; i < Size; i++){
                 cout << "[" << i << "]: " << Data[i] << endl;
             }
-            m.unlock();
         }
 
         void operator= (Queue<T> &newQueue){
+            lock_guard<mutex> lock(m);
             delete [] Data;
             Size = newQueue.size();
-            Data = new T[Size];;
+            Data = new T[Size];
             for(int i = 0; i < Size; i++){
                 Data[i] = newQueue.Data[i];
             }
-        }
-        
-        bool operator== (Queue<T> &newQueue){
-            if(Size != newQueue.size()) return false;
-            if(Size == 0) return true;
-            for(int i = 0; i < Size; i++){
-                if(Data[i] != newQueue.Data[i]) return false;
-            }
-            return true;
         }
 };
